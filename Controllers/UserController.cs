@@ -2,20 +2,27 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UserMicroservice.Application.DTO;
-using UsersAPI.Interface;
+using UserMicroservice.Application.Services;
+using UserMicroservice.Application.Services.Interface;
 
 namespace UsuarioMicroservice.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class UsuariosController : ControllerBase
+    public class UserController : ControllerBase
     {
         private readonly IUserService _usuarioService;
+        private UserAppService @object;
 
-        public UsuariosController(IUserService usuarioService)
+        public UserController(IUserService usuarioService)
         {
             _usuarioService = usuarioService;
+        }
+
+        public UserController(UserAppService @object)
+        {
+            this.@object = @object;
         }
 
         [HttpGet("me")]
@@ -53,6 +60,11 @@ namespace UsuarioMicroservice.Controllers
             {
                 return StatusCode(500, new { error = "Erro interno ao listar usuários", details = ex.Message });
             }
+        }
+
+        public object Register(RegisterUserDTO registerUserDTO)
+        {
+            throw new NotImplementedException();
         }
     }
 }

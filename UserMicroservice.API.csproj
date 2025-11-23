@@ -7,16 +7,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Domain\**" />
+    <Content Remove="Domain\**" />
+    <EmbeddedResource Remove="Domain\**" />
+    <None Remove="Domain\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.22" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="8.0.22" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.22">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Domain\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\UserMicroservice.Application\UserMicroservice.Application.csproj" />
+    <ProjectReference Include="..\UserMicroservice.Infra\UserMicroservice.Infra.csproj" />
   </ItemGroup>
 
 </Project>
