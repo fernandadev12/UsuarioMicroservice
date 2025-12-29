@@ -1,7 +1,10 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using UserMicroservice.Application.Commands;
 using UserMicroservice.Application.DTO;
 using UserMicroservice.Application.Services.Interface;
@@ -10,43 +13,63 @@ namespace UsuarioMicroservice.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly IUserService _usuarioService;
         private readonly IMediator _mdtr;
-       
+        private readonly IConfiguration _config;
 
-        public UserController(IUserService usuarioService, IMediator mdtr)
+        public UserController(IUserService usuarioService, IMediator mdtr, IConfiguration config)
         {
             _usuarioService = usuarioService;
             _mdtr = mdtr;
+            _config = config;
         }
 
-        [HttpGet("login")]
-        public async Task<IActionResult> Login(string username, string password)
+        [HttpPost("login")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Login([FromBody] LoginUserDTO loginDto)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (string.IsNullOrEmpty(usuarioId) || !Guid.TryParse(usuarioId, out var id))
-                return Unauthorized();
-
-            var usuario = await _usuarioService.Login(username, password, DateTime.Now);
+            var usuario = await _usuarioService.Login(loginDto.Username, loginDto.Password, DateTime.Now);
 
             if (usuario == null)
-                return NotFound();
+                return Unauthorized("Usuário ou senha inválidos");
 
-            var usuarioDto = new UserDTO
+            // Gerar claims
+            var claims = new[]
             {
-                Id = usuario.Id,
-                Username = usuario.Username
+                new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
+                new Claim(ClaimTypes.Name, usuario.Username),
+                new Claim(ClaimTypes.Role, usuario.Role.ToLower())
             };
 
-            return Ok(usuarioDto);
+            // Chave e credenciais
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            // Token
+            var token = new JwtSecurityToken(
+                issuer: _config["Jwt:Issuer"],
+                audience: _config["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddHours(2),
+                signingCredentials: creds
+            );
+
+            return Ok(new
+            {
+                Token = new JwtSecurityTokenHandler().WriteToken(token),
+                User = new UserDTO
+                {
+                    Id = usuario.Id,
+                    Username = usuario.Username,
+                    Role = usuario.Role
+                }
+            });
         }
 
-        [HttpGet]
-        [Authorize(Roles = "Administrador")]
+        [HttpGet("GetAllUsers")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> GetAll()
         {
             var usuarios = await _usuarioService.GetAllUserList();
@@ -61,6 +84,5 @@ namespace UsuarioMicroservice.Controllers
             var result = await _mdtr.Send(command);
             return Ok(result);
         }
-
     }
 }

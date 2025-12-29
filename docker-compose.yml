@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  usuario-microservice:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: usuario-microservice
+    ports:
+      - "8080:31100"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Default=Data Source=/data/usuario.db
+    volumes:
+      - ./data:/data   # volume para persistir o arquivo SQLite
+    restart: unless-stopped

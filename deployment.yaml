@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Deployment
+metadata:
+  name: usuario-microservice
+spec:
+  type : ClusterIP
+  containers:
+  - name: usuario-microservice
+    image: "microservices/usuario-microservice:latest"
+  - selector:
+    matchLabels:
+      app: usuario-microservice
+      replica: 1
+  ports:  
+    - port: 80
+      targetPort: 8080
+  env:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: Development
+      - name: ConnectionStrings__Default
+         value: "Data Source=/data/usuario.db"
+         volumeMounts:
+      - name: sqlite-data
+         mountPath: /data
+    volumes:
+        - name: sqlite-data
+          persistentVolumeClaim:
+            claimName: sqlite-pvc
