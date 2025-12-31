@@ -1,7 +1,0 @@
-<Solution>
-  <Project Path="../UserMicroservice.Application/UserMicroservice.Application.csproj" Id="ed34b13e-8417-4196-86d4-65780deb3a19" />
-  <Project Path="../UserMicroservice.Domain/UserMicroservice.Domain.csproj" Id="48d1b529-8728-4593-8665-443fdcb1be85" />
-  <Project Path="../UserMicroservice.Infra/UserMicroservice.Infra.csproj" Id="63d1c7c8-c8fa-4914-8554-4da6e08148a2" />
-  <Project Path="../UserMicroservice.Test/UserMicroservice.Test.csproj" Id="9b0dce92-58d0-401b-b8e6-f0996df9d9ba" />
-  <Project Path="UserMicroservice.API.csproj" />
-</Solution>

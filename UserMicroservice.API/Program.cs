@@ -30,7 +30,6 @@ builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(RegisterUserHandler).Assembly));
 
 builder.Services.AddEndpointsApiExplorer();
-
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
@@ -85,12 +84,23 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+using (var scope = app.Services.CreateScope()) //configura o banco de dados se ainda nao existir
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = scope.ServiceProvider.GetRequiredService<UsersDbContext>();
+        context.Database.Migrate();
+    }
+    catch (Exception ex)
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Erro ao migrar ou popular o banco de dados.");
+    }
 }
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseAuthorization();
 
