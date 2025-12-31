@@ -23,7 +23,7 @@ Este é um microserviço responsável por gerenciar as operações relacionadas 
 1. Certifique-se de ter o Docker e o Kubernetes instalados em seu sistema.
 2. Clone este repositório.
 3. Execute `docker-compose up` para iniciar o microserviço.
-4. O microserviço estará disponível em `http://localhost:3000`.
+4. O microserviço estará disponível em `http://localhost:5000`.
 
 ## Documentação da API
 
