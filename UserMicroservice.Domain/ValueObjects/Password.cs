@@ -14,12 +14,14 @@
 
         public bool Compare(string password) => Value == password;
 
-        public void Change(string newPassword)
+        public string Change(string newPassword)
         {
             if (string.IsNullOrEmpty(newPassword) || newPassword.Length < 6)
-                throw new ArgumentException("Nova senha inválida.");
+                throw new ArgumentException("Nova senha inválida. Mínimo 6 caracteres.");
 
             Value = newPassword;
+
+            return Value;
         }
     }
 }

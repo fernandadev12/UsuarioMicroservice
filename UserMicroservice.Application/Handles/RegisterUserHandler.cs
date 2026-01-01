@@ -1,34 +1,33 @@
 ﻿using MediatR;
 using UserMicroservice.Application.Commands;
 using UserMicroservice.Application.DTO;
-using UserMicroservice.Domain.Entities;
-using UserMicroservice.Domain.Repositories.Interface;
+using UserMicroservice.Application.Services.Interface;
 
 namespace UserMicroservice.Application.Handles
 {
     // REGISTRAR
     public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, UserDTO>
     {
-        private readonly IUserRepository _repository;
+        private readonly IUserService _service;
 
-        public RegisterUserHandler(IUserRepository repository)
+        public RegisterUserHandler(IUserService service)
         {
-            _repository = repository;
+            _service = service;
         }
 
         public async Task<UserDTO> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
             try
-            {
-                var user = new User(
-                      Guid.NewGuid(),
-                      request.Data.Username,
-                      request.Data.Email,
-                      request.Data.Password,
-                      request.Data.Role
-                  );
+{
+                var user = new UserDTO();
+                user.Id = Guid.NewGuid();
+                user.Username = request.Data.Username;
+                user.Email = request.Data.Email;
+                user.Password = request.Data.Password.Value;
+                user.Role = request.Data.Role;
+                 
 
-                await _repository.Register(user);
+                await _service.Register(user);
 
                 return new UserDTO
                 {

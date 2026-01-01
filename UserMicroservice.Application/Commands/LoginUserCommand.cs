@@ -3,10 +3,10 @@ using UserMicroservice.Application.DTO;
 
 namespace UserMicroservice.Application.Commands
 {
-    public class LoginUserCommand : IRequest<UserDTO>
+    public class LoginUserCommand : IRequest<LoginUserDTO>
     {
-        public UserDTO Data { get; set; }
-        public LoginUserCommand(UserDTO data)
+        public LoginUserDTO Data { get; set; }
+        public LoginUserCommand(LoginUserDTO data)
         {
             Data = data;
         }

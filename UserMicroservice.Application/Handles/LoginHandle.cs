@@ -1,28 +1,32 @@
 ﻿using MediatR;
 using UserMicroservice.Application.Commands;
 using UserMicroservice.Application.DTO;
+using UserMicroservice.Application.Services.Interface;
 using UserMicroservice.Domain.Repositories.Interface;
 
 namespace UserMicroservice.Application.Handles
 {
-    public class LoginHandle : IRequestHandler<LoginUserCommand, UserDTO>
+    public class LoginHandle : IRequestHandler<LoginUserCommand, LoginUserDTO>
     {
-        private readonly IUserRepository _repository;
-        public LoginHandle(IUserRepository repository)
+        private readonly IUserService _service;
+        public LoginHandle(IUserService service)
         {
-            _repository = repository;
+            _service = service;
         }
-        public Task<UserDTO> Handle(LoginUserCommand request, CancellationToken cancellationToken)
+
+        public async Task<LoginUserDTO> Handle(LoginUserCommand request, CancellationToken cancellationToken)
         {
-            var usuario = _repository.Login(request.Data.Username, request.Data.Password, DateTime.Now);
-            return Task.FromResult(new UserDTO
+            var usuario = await _service.Login(request.Data.Username, request.Data.Password, DateTime.Now);
+            return await Task.FromResult(new LoginUserDTO
             {
                 Username = request.Data.Username,
-                Password = request.Data.Password,
-                Role = usuario.Result.Role
-               
-             });
+                Password = request.Data.Password
+      
+            });
         }
+     
+
+
     } 
 
 }

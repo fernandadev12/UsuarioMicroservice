@@ -1,4 +1,5 @@
-﻿using UserMicroservice.Application.Services.Interface;
+﻿using UserMicroservice.Application.DTO;
+using UserMicroservice.Application.Services.Interface;
 using UserMicroservice.Domain.Entities;
 using UserMicroservice.Domain.Repositories.Interface;
 
@@ -23,17 +24,39 @@ namespace UserMicroservice.Application.Services
             return await _userRepository.GetById(id);
         }
 
-        public async Task Register(User user)
+        public async Task Register(UserDTO user)
         {
             if (string.IsNullOrEmpty(user.Username))
                 throw new Exception("Username é obrigatório");
 
-            await _userRepository.Register(user);
+            var hashedPassword = user.Password.Length > 0 ? BCrypt.Net.BCrypt.HashPassword(user.Password) : null;
+            var user_password = hashedPassword != null ? new UserMicroservice.Domain.ValueObjects.Password(hashedPassword) : null;
+
+            var novoUsuario = new User(
+                Guid.NewGuid(),
+                user.Username,
+                user.Email,
+                user_password,
+                user.Role);
+
+            await _userRepository.Register(novoUsuario);
         }
 
-        public async Task<User> Update(User user)
+        public async Task<User> Update(UserDTO user)
         {
-            return await _userRepository.Update(user);
+            if (string.IsNullOrEmpty(user.Username))
+                throw new Exception("Username é obrigatório");
+
+            var hashedPassword = user.Password.Length > 0 ? BCrypt.Net.BCrypt.HashPassword(user.Password) : null;
+            var user_password = hashedPassword != null ? new UserMicroservice.Domain.ValueObjects.Password(hashedPassword) : null;
+
+            var updateUsuario = new User(
+                Guid.NewGuid(),
+                user.Username,
+                user.Email,
+                user_password,
+                user.Role);
+            return await _userRepository.Update(updateUsuario);
         }
 
         public async Task<bool> Delete(Guid id)
@@ -49,6 +72,31 @@ namespace UserMicroservice.Application.Services
                 throw new UnauthorizedAccessException("Credenciais inválidas");
 
             return user;
+        }
+
+        public async Task<User> GetUserByUsername(string username)
+        {
+            var user = await _userRepository.GetByUsername(username);
+            return user;
+        }
+
+        public async Task<User> GetUserByEmail(string email)
+        {
+            var user = await _userRepository.GetByEmail(email);
+            return user;
+        }
+
+        public async Task<bool> SendEmailNewRegisterOrLogin(string email)
+        {
+            try
+            {
+                await _userRepository.SendEmailNewRegisterOrLogin(email);               
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro enviar email de notificação: " + ex.Message);
+            }
+            return true;
         }
     }
 }

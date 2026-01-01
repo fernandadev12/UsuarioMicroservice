@@ -1,4 +1,5 @@
-﻿using UserMicroservice.Domain.Entities;
+﻿using UserMicroservice.Application.DTO;
+using UserMicroservice.Domain.Entities;
 
 namespace UserMicroservice.Application.Services.Interface
 {
@@ -6,9 +7,12 @@ namespace UserMicroservice.Application.Services.Interface
     {
         Task<List<User>> GetAllUserList();
         Task<User> GetById(Guid id);
-        Task Register(User user);
-        Task<User> Update(User user);
+        Task<User> GetUserByUsername(string username);
+        Task<User> GetUserByEmail(string email);
+        Task Register(UserDTO user);
+        Task<User> Update(UserDTO user);
         Task<bool> Delete(Guid id);
         Task<User> Login(string username, string password, DateTime dataAcesso);
+        Task <bool> SendEmailNewRegisterOrLogin(string email);
     }
 }

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using UserMicroservice.Application.Commands;
 using UserMicroservice.Application.DTO;
-using UserMicroservice.Application.Services.Interface;
+using UserMicroservice.Application.Queries;
 
 namespace UsuarioMicroservice.Controllers
 {
@@ -15,16 +15,16 @@ namespace UsuarioMicroservice.Controllers
     [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
-        private readonly IUserService _usuarioService;
         private readonly IMediator _mdtr;
         private readonly IConfiguration _config;
 
-        public UserController(IUserService usuarioService, IMediator mdtr, IConfiguration config)
+        public UserController(IMediator mdtr, IConfiguration config)
         {
-            _usuarioService = usuarioService;
             _mdtr = mdtr;
             _config = config;
         }
+
+
         /// <summary>
         /// Autentica o usuário e gera o token JWT
         /// </summary>
@@ -34,17 +34,17 @@ namespace UsuarioMicroservice.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginUserDTO loginDto)
         {
-            var usuario = await _usuarioService.Login(loginDto.Username, loginDto.Password, DateTime.Now);
-
-            if (usuario == null)
+            if (loginDto.Username == null || loginDto.Password == null)
                 return Unauthorized("Usuário ou senha inválidos");
+
+            var login = new LoginUserCommand(loginDto);
+            var retorno = _mdtr.Send(login);
 
             // Gerar claims
             var claims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
-                new Claim(ClaimTypes.Name, usuario.Username),
-                new Claim(ClaimTypes.Role, usuario.Role.ToLower())
+                new Claim(ClaimTypes.NameIdentifier, retorno.Id.ToString()),
+                new Claim(ClaimTypes.Name, retorno.Result.Username)
             };
 
             // Chave e credenciais
@@ -63,11 +63,10 @@ namespace UsuarioMicroservice.Controllers
             return Ok(new
             {
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
-                User = new UserDTO
+                loginUser = new LoginUserDTO
                 {
-                    Id = usuario.Id,
-                    Username = usuario.Username,
-                    Role = usuario.Role
+                    Username = retorno.Result.Username,
+                    DataAcesso = DateTime.Now.ToString()
                 }
             });
         }
@@ -80,8 +79,9 @@ namespace UsuarioMicroservice.Controllers
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> GetAll()
         {
-            var usuarios = await _usuarioService.GetAllUserList();
-            return Ok(usuarios);
+            var listUsers = new GetAllUsersListQuerie();
+            var result = await _mdtr.Send(listUsers);
+            return Ok(result);
         }
 
         /// <summary>
@@ -93,8 +93,9 @@ namespace UsuarioMicroservice.Controllers
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> GetUserByUsername(string username)
         {
-            var usuarios = await _usuarioService.GetAllUserList();
-            return Ok(usuarios);
+            var getUserByUsername = new GetUserByUsernameQuery(username);
+            var result = await _mdtr.Send(getUserByUsername);
+            return Ok(result);
         }
 
         /// <summary>
@@ -104,10 +105,11 @@ namespace UsuarioMicroservice.Controllers
         /// <returns>usuario cadastrado</returns>
         [HttpGet("GetUserByEmail/{email}")]
         [Authorize(Roles = "admin")]
-        public async Task<IActionResult> GetUserByEmail(string username)
+        public async Task<IActionResult> GetUserByEmail(string email)
         {
-            var usuarios = await _usuarioService.GetAllUserList();
-            return Ok(usuarios);
+            var getUserByEmail = new GetUserByEmailQuery(email);
+            var result = await _mdtr.Send(getUserByEmail);
+            return Ok(result);
         }
 
         /// <summary>
@@ -119,8 +121,9 @@ namespace UsuarioMicroservice.Controllers
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
-            var usuarios = await _usuarioService.GetAllUserList();
-            return Ok(usuarios);
+            var usuarioRemover = new DeleteUserCommand(id);
+            var result = await _mdtr.Send(usuarioRemover);
+            return Ok(result);
         }
 
         /// <summary>
@@ -130,10 +133,12 @@ namespace UsuarioMicroservice.Controllers
         /// <returns>true se atualizado com sucesso</returns>
         [HttpGet("UpdateUser/{id}")]
         [Authorize(Roles = "admin")]
-        public async Task<IActionResult> UpdateUser(Guid id)
+        public async Task<IActionResult> UpdateUser(UserDTO user)
         {
-            var usuarios = await _usuarioService.GetAllUserList();
-            return Ok(usuarios);
+            var updateUsuario = new UpdateUserCommand(user);
+            var result = await _mdtr.Send(updateUsuario);
+
+            return Ok(result);
         }
 
         /// <summary>
@@ -145,8 +150,9 @@ namespace UsuarioMicroservice.Controllers
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> SendEmailNewRegisterOrLogin(string email)
         {
-            var usuarios = await _usuarioService.GetAllUserList();
-            return Ok(usuarios);
+            var emailUsuario = new SendEmailCommand(email);
+            var result = _mdtr.Send(emailUsuario);
+            return Ok(result);
         }
 
         /// <summary>

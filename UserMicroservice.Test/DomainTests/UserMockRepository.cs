@@ -15,6 +15,11 @@ namespace UserMicroservice.Test.DomainTests
             throw new NotImplementedException();
         }
 
+        public Task<User> GetByEmail(string email)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<User> GetById(Guid id)
         {
             throw new NotImplementedException();
@@ -31,6 +36,11 @@ namespace UserMicroservice.Test.DomainTests
         }
 
         public Task Register(User user)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> SendEmailNewRegisterOrLogin(string email)
         {
             throw new NotImplementedException();
         }

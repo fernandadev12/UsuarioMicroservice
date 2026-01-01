@@ -5,10 +5,13 @@ namespace UserMicroservice.Application.Commands
 {
     public class UpdateUserCommand : IRequest<UserDTO>
     {
-        public UserDTO Data { get; set; }
-        public UpdateUserCommand(UserDTO data)
+        public Guid Id { get; set; }
+        public UserDTO UserDTO { get; set; }
+
+        public UpdateUserCommand(UserDTO userDto)
         {
-            Data = data;
+            Id = userDto.Id;
+            UserDTO = userDto;
         }
     }
 }
