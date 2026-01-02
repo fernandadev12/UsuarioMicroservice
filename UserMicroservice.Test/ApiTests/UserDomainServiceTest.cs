@@ -3,7 +3,7 @@ using UserMicroservice.Domain.Repositories.Interface;
 using UserMicroservice.Domain.Services;
 using UserMicroservice.Domain.ValueObjects;
 using Moq;
-namespace UserMicroservice.Test.DomainTests
+namespace UserMicroservice.Test.ApiTests
 {
     public class UserDomainServiceTests
     {

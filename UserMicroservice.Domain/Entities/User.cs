@@ -14,7 +14,7 @@ namespace UserMicroservice.Domain.Entities
         public User() { }
 
         // Construtor principal
-        public User(Guid id, string username, Email email, Password password, string role)
+        public User(Guid id, string username, string email, string password, string role)
         {
             if (string.IsNullOrEmpty(username))
                 throw new ArgumentException("Username é obrigatório.", nameof(username));
@@ -24,8 +24,8 @@ namespace UserMicroservice.Domain.Entities
 
             Id = id; // atribuir o Id recebido
             Username = username;
-            Email = email;
-            Password = password;
+            Email.Address = email;
+            Password.Value = password;
             Role = role;
         }
 

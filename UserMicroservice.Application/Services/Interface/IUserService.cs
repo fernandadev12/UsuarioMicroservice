@@ -9,7 +9,7 @@ namespace UserMicroservice.Application.Services.Interface
         Task<User> GetById(Guid id);
         Task<User> GetUserByUsername(string username);
         Task<User> GetUserByEmail(string email);
-        Task Register(UserDTO user);
+        Task<bool> Register(UserDTO user);
         Task<User> Update(UserDTO user);
         Task<bool> Delete(Guid id);
         Task<User> Login(string username, string password, DateTime dataAcesso);

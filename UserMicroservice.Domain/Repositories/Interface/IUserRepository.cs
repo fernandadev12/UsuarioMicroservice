@@ -5,7 +5,7 @@ namespace UserMicroservice.Domain.Repositories.Interface
     public interface IUserRepository
     {
         Task<List<User>> GetAllUserList();
-        Task Register(User user);
+        Task<bool> Register(User user);
         Task<User> Update(User user);
         Task<User> GetByEmail(string email);
         Task<bool> Delete(Guid id);

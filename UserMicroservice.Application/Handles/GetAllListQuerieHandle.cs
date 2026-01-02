@@ -21,7 +21,7 @@ namespace UserMicroservice.Application.Handles
             {
                 Id = user.Id,
                 Username = user.Username,
-                Email = user.Email,
+                Email = user.Email.Address,
                 Role = user.Role
             }).ToList();
             

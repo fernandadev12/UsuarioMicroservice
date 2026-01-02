@@ -3,7 +3,7 @@
     public class Email
     {
 
-        public string Address { get; private set; }
+        public string Address { get; set; }
 
         public Email(string address)
         {

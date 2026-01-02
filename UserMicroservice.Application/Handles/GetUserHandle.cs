@@ -21,7 +21,7 @@ namespace UserMicroservice.Application.Handles
             {
                 Id = getUser.Id,
                 Username = getUser.Username,
-                Email = getUser.Email,
+                Email = getUser.Email.Address,
                 Role = getUser.Role
             });
         }
@@ -42,7 +42,7 @@ namespace UserMicroservice.Application.Handles
             {
                 Id = getUser.Result.Id,
                 Username = getUser.Result.Username,
-                Email = getUser.Result.Email,
+                Email = getUser.Result.Email.Address,
                 Role = getUser.Result.Role
             });
         }

@@ -49,5 +49,10 @@ namespace UserMicroservice.Test.DomainTests
         {
             throw new NotImplementedException();
         }
+
+        Task<bool> IUserRepository.Register(User user)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

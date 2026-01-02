@@ -2,7 +2,7 @@
 {
     public class Password
     {
-        public string Value { get; private set; }
+        public string Value { get; set; }
 
         public Password(string value)
         {

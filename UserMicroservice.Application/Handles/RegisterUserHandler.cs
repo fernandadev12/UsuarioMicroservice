@@ -23,7 +23,7 @@ namespace UserMicroservice.Application.Handles
                 user.Id = Guid.NewGuid();
                 user.Username = request.Data.Username;
                 user.Email = request.Data.Email;
-                user.Password = request.Data.Password.Value;
+                user.Password = request.Data.Password;
                 user.Role = request.Data.Role;
                  
 

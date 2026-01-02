@@ -8,13 +8,13 @@ namespace UserMicroservice.Domain.Aggregates
         public User User { get; private set; }
         public List<UserPermission> Permissions { get; private set; } = new();
 
-        public UserAggregate(string username, Email email, Password password, string role)
+        public UserAggregate(string username, string email, string password, string role)
         {
             if (string.IsNullOrEmpty(username))
                 throw new ArgumentException("Username é obrigatório.");
 
             User = new User(new Guid(),username, email, password, role);
-            User.SetPassword(password.Value);
+            User.SetPassword(password);
         }
 
         public bool Authenticate(string password)

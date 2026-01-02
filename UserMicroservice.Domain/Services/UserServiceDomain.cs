@@ -43,7 +43,7 @@ namespace UserMicroservice.Domain.Services
             var emailVO = new Email(email);
             var passwordVO = new Password(password);
 
-            var user = new User(new Guid(),username, emailVO, passwordVO, role);
+            var user = new User(new Guid(),username, emailVO.Address, passwordVO.Value, role);
             await _userRepository.Register(user);
 
             return user;

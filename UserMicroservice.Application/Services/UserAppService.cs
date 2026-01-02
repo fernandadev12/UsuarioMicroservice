@@ -1,7 +1,9 @@
-﻿using UserMicroservice.Application.DTO;
+﻿using System.Data;
+using UserMicroservice.Application.DTO;
 using UserMicroservice.Application.Services.Interface;
 using UserMicroservice.Domain.Entities;
 using UserMicroservice.Domain.Repositories.Interface;
+using UserMicroservice.Domain.ValueObjects;
 
 namespace UserMicroservice.Application.Services
 {
@@ -24,7 +26,7 @@ namespace UserMicroservice.Application.Services
             return await _userRepository.GetById(id);
         }
 
-        public async Task Register(UserDTO user)
+        public async Task<bool> Register(UserDTO user)
         {
             if (string.IsNullOrEmpty(user.Username))
                 throw new Exception("Username é obrigatório");
@@ -35,11 +37,12 @@ namespace UserMicroservice.Application.Services
             var novoUsuario = new User(
                 Guid.NewGuid(),
                 user.Username,
-                user.Email,
-                user_password,
+                user.Email.ToString(),
+                user_password.Value,
                 user.Role);
 
             await _userRepository.Register(novoUsuario);
+            return true;
         }
 
         public async Task<User> Update(UserDTO user)
@@ -50,12 +53,14 @@ namespace UserMicroservice.Application.Services
             var hashedPassword = user.Password.Length > 0 ? BCrypt.Net.BCrypt.HashPassword(user.Password) : null;
             var user_password = hashedPassword != null ? new UserMicroservice.Domain.ValueObjects.Password(hashedPassword) : null;
 
-            var updateUsuario = new User(
+            var updateUsuario = 
+               new User(
                 Guid.NewGuid(),
                 user.Username,
                 user.Email,
-                user_password,
+                user_password.Value,
                 user.Role);
+
             return await _userRepository.Update(updateUsuario);
         }
 
@@ -98,5 +103,6 @@ namespace UserMicroservice.Application.Services
             }
             return true;
         }
+
     }
 }

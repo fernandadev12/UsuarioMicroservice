@@ -61,10 +61,19 @@ namespace UserMicroservice.Infra.Data.Repository
             return user;
         }
 
-        public async Task Register(User user)
+        public async Task<bool> Register(User user)
         {
-            await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.Users.AddAsync(user);
+                await _context.SaveChangesAsync();
+
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return true;
         }
 
         public async Task<bool> SendEmailNewRegisterOrLogin(string email)
@@ -91,7 +100,7 @@ namespace UserMicroservice.Infra.Data.Repository
                 var response = await client.SendAsync(request);
 
                 if (response.IsSuccessStatusCode)
-                {     
+                {
                     Console.WriteLine("Email de cadastro/login enviado com sucesso.");
                 }
                 else

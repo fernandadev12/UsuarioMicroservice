@@ -38,7 +38,7 @@ namespace UserMicroservice.Application.Handles
             {
                 Id = user.Id,
                 Username = request.UserDTO.Username ?? user.Username,
-                Email = request.UserDTO.Email ?? user.Email,
+                Email = request.UserDTO.Email ?? user.Email.Address,
                 Role = request.UserDTO.Role ?? user.Role,
                 Password = request.UserDTO.Password != null
                     ? user.Password.Change(request.UserDTO.Password) 
